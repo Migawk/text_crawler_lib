@@ -1,10 +1,9 @@
+import wordlist.wordlist as wl
 import numpy as np
+import sys
 
-def find_word_vectors(word: str): # find word in a voccab
-    with open("words.txt", 'r') as file:
-        for line in file:
-            if line.startswith(word):
-                return line.strip().replace("\n","")
+if not wl.init_check_is_split_wordlists():
+    wl.split_sorting_wordlist('words.txt')
 
 def word_spliter(line: str): # split result from vocab into [word, vectors[]]
     word, *numbers = line.strip().split()
@@ -23,7 +22,7 @@ def average_vectors(vectors):
     return np.mean(vectors, axis=0)
 
 def vectorize_phrase(phrase: str):
-    words = list(map(find_word_vectors, phrase.split(" ")))
+    words = list(map(wl.find_word_vectors, phrase.split(" ")))
     filtered_words = [w for w in words if w is not None]
     vectors = list(map(word_spliter, filtered_words))
     vectors_n = list(map(normalize_vector, vectors))
@@ -40,3 +39,12 @@ def cosine_similarity(A, B):
 
 def euclidean_distance(A, B):
     return np.linalg.norm(A - B)
+
+
+phrase_1 = sys.argv[1]
+phrase_2 = sys.argv[2]
+
+vec_1 = vectorize_phrase(phrase_1)
+vec_2 = vectorize_phrase(phrase_2)
+
+print(cosine_similarity(vec_1, vec_2))
